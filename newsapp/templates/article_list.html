@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Articles{% endblock %}
+
+{% block content %}
+<h1>Approved Articles</h1>
+
+{% for article in articles %}
+    <div class="card">
+        <h2>
+            <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+        </h2>
+        <p><strong>Author:</strong> {{ article.author.username }}</p>
+        <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
+        <p><strong>Status:</strong> {{ article.status }}</p>
+
+        {% if user.is_authenticated and article.publisher %}
+            <p>
+                <a href="{% url 'subscribe_publisher' article.publisher.id %}">
+                    Subscribe to publisher
+                </a>
+            </p>
+        {% endif %}
+
+        {% if user.is_authenticated and article.author.role == 'journalist' %}
+            <p>
+                <a href="{% url 'subscribe_journalist' article.author.id %}">
+                    Subscribe to journalist
+                </a>
+            </p>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>No approved articles available.</p>
+{% endfor %}
+{% endblock %}

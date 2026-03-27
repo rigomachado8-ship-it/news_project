@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+<p>Welcome, {{ user.username }}. Your role is <strong>{{ user.role }}</strong>.</p>
+
+{% if user.role == 'reader' %}
+    <div class="card">
+        <h2>Reader Actions</h2>
+        <p>You can browse approved articles and manage subscriptions.</p>
+    </div>
+{% endif %}
+
+{% if user.role == 'journalist' or user.role == 'editor' %}
+    <div class="card">
+        <h2>My Articles</h2>
+        {% for article in my_articles %}
+            <p>
+                <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+                — {{ article.status }}
+            </p>
+        {% empty %}
+            <p>No articles yet.</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if user.role == 'editor' %}
+    <div class="card">
+        <h2>Pending Review</h2>
+        {% for article in pending_articles %}
+            <p>{{ article.title }} by {{ article.author.username }}</p>
+        {% empty %}
+            <p>No pending articles right now.</p>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

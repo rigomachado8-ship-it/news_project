@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Approve Articles{% endblock %}
+
+{% block content %}
+<h1>Approve Pending Articles</h1>
+
+{% for article in articles %}
+    <div class="card">
+        <h2>{{ article.title }}</h2>
+        <p><strong>Author:</strong> {{ article.author.username }}</p>
+        <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
+        <p>{{ article.content|truncatewords:40 }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="article_id" value="{{ article.id }}">
+            <button type="submit" name="action" value="approve">Approve</button>
+            <button type="submit" name="action" value="reject">Reject</button>
+        </form>
+    </div>
+{% empty %}
+    <p>No pending articles to review.</p>
+{% endfor %}
+{% endblock %}

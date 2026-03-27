@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}My Subscriptions{% endblock %}
+
+{% block content %}
+<h1>My Subscriptions</h1>
+
+<h2>Publishers</h2>
+{% for publisher in publishers %}
+    <p>{{ publisher.name }}</p>
+{% empty %}
+    <p>You are not subscribed to any publishers yet.</p>
+{% endfor %}
+
+<h2>Journalists</h2>
+{% for journalist in journalists %}
+    <p>{{ journalist.username }}</p>
+{% empty %}
+    <p>You are not subscribed to any journalists yet.</p>
+{% endfor %}
+{% endblock %}
