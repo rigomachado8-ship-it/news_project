@@ -96,12 +96,10 @@
                 <a href="{% url 'approve_articles' %}">Approve Articles</a>
             {% endif %}
 
-            <!-- ✅ FIXED LOGOUT (POST instead of GET) -->
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
                 <button type="submit">Logout</button>
             </form>
-
         {% else %}
             <a href="{% url 'register' %}">Register</a>
             <a href="{% url 'login' %}">Login</a>
