@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
@@ -164,7 +165,26 @@ def approve_articles(request):
             article.status = Article.STATUS_APPROVED
             article.approved_by = request.user
             article.save()
-            messages.success(request, f'"{article.title}" was approved.')
+
+            subscribers = article.subscribers.all()
+            recipient_emails = [user.email for user in subscribers if user.email]
+
+            if recipient_emails:
+                send_mail(
+                    subject=f"New Article: {article.title}",
+                    message=(
+                        f'A new article has been published.\n\n'
+                        f"Title: {article.title}\n"
+                        f"Author: {article.author.username}\n"
+                        f"Publisher: {article.publisher if article.publisher else 'None'}\n\n"
+                        f"{article.content}"
+                    ),
+                    from_email=None,
+                    recipient_list=recipient_emails,
+                    fail_silently=True,
+                )
+
+            messages.success(request, f'"{article.title}" was approved and subscribers notified.')
 
         elif action == "reject":
             article.status = Article.STATUS_REJECTED

@@ -103,3 +103,8 @@ REST_FRAMEWORK = {
 MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
+
+# Email configuration for development/testing.
+# Emails will be printed to the console when an article is approved.
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "no-reply@newsproject.com"
