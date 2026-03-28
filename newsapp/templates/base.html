@@ -65,14 +65,20 @@
 
         {% if user.is_authenticated %}
             <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="{% url 'my_subscriptions' %}">My Subscriptions</a>
-            <a href="{% url 'subscribed_articles' %}">Subscribed Articles</a>
-            {% if user.role == 'journalist' or user.role == 'editor' %}
+
+            {% if user.is_reader %}
+                <a href="{% url 'my_subscriptions' %}">My Subscriptions</a>
+                <a href="{% url 'subscribed_articles' %}">Subscribed Articles</a>
+            {% endif %}
+
+            {% if user.is_journalist %}
                 <a href="{% url 'create_article' %}">Create Article</a>
             {% endif %}
-            {% if user.role == 'editor' %}
+
+            {% if user.is_editor %}
                 <a href="{% url 'approve_articles' %}">Approve Articles</a>
             {% endif %}
+
             <a href="{% url 'logout' %}">Logout</a>
         {% else %}
             <a href="{% url 'register' %}">Register</a>

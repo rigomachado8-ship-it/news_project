@@ -116,11 +116,13 @@ def edit_article(request, pk):
         messages.error(request, "Readers cannot edit articles.")
         return redirect("dashboard")
 
-    if request.user.is_journalist and request.user != article.author:
-        messages.error(request, "Journalists can only edit their own articles.")
-        return redirect("dashboard")
-
-    if not (request.user.is_editor or request.user == article.author):
+    if request.user.is_editor:
+        pass
+    elif request.user.is_journalist:
+        if request.user != article.author:
+            messages.error(request, "Journalists can only edit their own articles.")
+            return redirect("dashboard")
+    else:
         messages.error(request, "You do not have permission to edit this article.")
         return redirect("dashboard")
 
@@ -129,9 +131,11 @@ def edit_article(request, pk):
         if form.is_valid():
             updated_article = form.save(commit=False)
 
-            if request.user.is_journalist and updated_article.status == Article.STATUS_APPROVED:
-                updated_article.status = Article.STATUS_PENDING
-                updated_article.approved_by = None
+            if request.user.is_journalist:
+                updated_article.author = article.author
+                if updated_article.status == Article.STATUS_APPROVED:
+                    updated_article.status = Article.STATUS_PENDING
+                    updated_article.approved_by = None
 
             if request.user.is_editor and updated_article.status == Article.STATUS_APPROVED:
                 updated_article.approved_by = request.user
@@ -285,6 +289,7 @@ class ArticleListCreateAPIView(generics.ListCreateAPIView):
 
         if article.status == Article.STATUS_APPROVED:
             article.status = Article.STATUS_PENDING
+            article.approved_by = None
             article.save()
 
 
@@ -323,12 +328,15 @@ class ArticleDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         if request.user.is_journalist:
             if article.author != request.user:
                 raise PermissionDenied("Journalists can only edit their own articles.")
+
             response = super().update(request, *args, **kwargs)
             article.refresh_from_db()
+
             if article.status == Article.STATUS_APPROVED:
                 article.status = Article.STATUS_PENDING
                 article.approved_by = None
                 article.save()
+
             return response
 
         raise PermissionDenied("You do not have permission to edit this article.")
