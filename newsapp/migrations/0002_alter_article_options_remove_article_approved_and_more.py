@@ -8,69 +8,102 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsapp', '0001_initial'),
+        ("newsapp", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='article',
-            options={'ordering': ['-created_at']},
+            name="article",
+            options={"ordering": ["-created_at"]},
         ),
         migrations.RemoveField(
-            model_name='article',
-            name='approved',
+            model_name="article",
+            name="approved",
         ),
         migrations.RemoveField(
-            model_name='newsletter',
-            name='articles',
+            model_name="newsletter",
+            name="articles",
         ),
         migrations.RemoveField(
-            model_name='newsletter',
-            name='author',
+            model_name="newsletter",
+            name="author",
         ),
         migrations.AddField(
-            model_name='article',
-            name='approved_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='approved_articles', to=settings.AUTH_USER_MODEL),
+            model_name="article",
+            name="approved_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="approved_articles",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='article',
-            name='newsletter',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='articles', to='newsapp.newsletter'),
+            model_name="article",
+            name="newsletter",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="articles",
+                to="newsapp.newsletter",
+            ),
         ),
         migrations.AddField(
-            model_name='article',
-            name='status',
-            field=models.CharField(choices=[('draft', 'Draft'), ('pending', 'Pending Review'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='pending', max_length=20),
+            model_name="article",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("draft", "Draft"),
+                    ("pending", "Pending Review"),
+                    ("approved", "Approved"),
+                    ("rejected", "Rejected"),
+                ],
+                default="pending",
+                max_length=20,
+            ),
         ),
         migrations.AddField(
-            model_name='article',
-            name='updated_at',
+            model_name="article",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='publisher',
-            name='description',
+            model_name="publisher",
+            name="description",
             field=models.TextField(blank=True),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='role',
-            field=models.CharField(choices=[('reader', 'Reader'), ('editor', 'Editor'), ('journalist', 'Journalist')], default='reader', max_length=20),
+            model_name="customuser",
+            name="role",
+            field=models.CharField(
+                choices=[
+                    ("reader", "Reader"),
+                    ("editor", "Editor"),
+                    ("journalist", "Journalist"),
+                ],
+                default="reader",
+                max_length=20,
+            ),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='subscribed_journalists',
-            field=models.ManyToManyField(blank=True, related_name='journalist_subscribers', to=settings.AUTH_USER_MODEL),
+            model_name="customuser",
+            name="subscribed_journalists",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="journalist_subscribers",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='newsletter',
-            name='description',
+            model_name="newsletter",
+            name="description",
             field=models.TextField(blank=True),
         ),
         migrations.AlterField(
-            model_name='publisher',
-            name='name',
+            model_name="publisher",
+            name="name",
             field=models.CharField(max_length=255, unique=True),
         ),
     ]

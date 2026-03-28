@@ -1,3 +1,8 @@
+"""
+Views for authentication, article management, subscriptions,
+and article-related API endpoints.
+"""
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -17,11 +22,14 @@ from .serializers import ArticleSerializer
 
 
 class CustomLoginView(LoginView):
+    """Render and process the custom login form."""
+
     authentication_form = CustomLoginForm
     template_name = "login.html"
 
 
 def register_view(request):
+    """Register a new user and log them in after successful signup."""
     if request.user.is_authenticated:
         return redirect("dashboard")
 
@@ -39,11 +47,13 @@ def register_view(request):
 
 
 def login_view(request):
+    """Delegate login requests to the custom login view."""
     view = CustomLoginView.as_view()
     return view(request)
 
 
 def article_list(request):
+    """Display all approved articles."""
     articles = Article.objects.select_related("author", "publisher").filter(
         status=Article.STATUS_APPROVED
     )
@@ -51,6 +61,12 @@ def article_list(request):
 
 
 def article_detail(request, pk):
+    """
+    Display a single article.
+
+    Approved articles are visible to everyone. Unapproved articles are only
+    visible to their author or an editor.
+    """
     article = get_object_or_404(
         Article.objects.select_related("author", "publisher", "newsletter"),
         pk=pk,
@@ -62,7 +78,10 @@ def article_detail(request, pk):
             return redirect("login")
 
         if request.user != article.author and not request.user.is_editor:
-            messages.error(request, "You do not have permission to view this article.")
+            messages.error(
+                request,
+                "You do not have permission to view this article.",
+            )
             return redirect("article_list")
 
     is_subscribed = False
@@ -78,6 +97,7 @@ def article_detail(request, pk):
 
 @login_required
 def dashboard_view(request):
+    """Display the logged-in user's articles and all pending articles."""
     context = {
         "my_articles": Article.objects.filter(author=request.user),
         "pending_articles": Article.objects.filter(status=Article.STATUS_PENDING),
@@ -87,6 +107,12 @@ def dashboard_view(request):
 
 @login_required
 def create_article(request):
+    """
+    Allow journalists to create a new article.
+
+    If a journalist attempts to create an already approved article, it is
+    changed back to pending review.
+    """
     if not request.user.is_journalist:
         messages.error(request, "Only journalists can create articles.")
         return redirect("dashboard")
@@ -111,6 +137,11 @@ def create_article(request):
 
 @login_required
 def edit_article(request, pk):
+    """
+    Allow editors to edit any article and journalists to edit their own.
+
+    Readers and unauthorized users are redirected away from the edit page.
+    """
     article = get_object_or_404(Article, pk=pk)
 
     if request.user.is_reader:
@@ -121,7 +152,10 @@ def edit_article(request, pk):
         pass
     elif request.user.is_journalist:
         if request.user != article.author:
-            messages.error(request, "Journalists can only edit their own articles.")
+            messages.error(
+                request,
+                "Journalists can only edit their own articles.",
+            )
             return redirect("dashboard")
     else:
         messages.error(request, "You do not have permission to edit this article.")
@@ -138,7 +172,10 @@ def edit_article(request, pk):
                     updated_article.status = Article.STATUS_PENDING
                     updated_article.approved_by = None
 
-            if request.user.is_editor and updated_article.status == Article.STATUS_APPROVED:
+            if (
+                request.user.is_editor
+                and updated_article.status == Article.STATUS_APPROVED
+            ):
                 updated_article.approved_by = request.user
 
             updated_article.save()
@@ -147,11 +184,21 @@ def edit_article(request, pk):
     else:
         form = ArticleForm(instance=article, user=request.user)
 
-    return render(request, "edit_article.html", {"form": form, "article": article})
+    return render(
+        request,
+        "edit_article.html",
+        {"form": form, "article": article},
+    )
 
 
 @login_required
 def approve_articles(request):
+    """
+    Allow editors to approve or reject pending articles.
+
+    When an article is approved, notifications are sent to subscribed users
+    following the article, its publisher, or its author.
+    """
     if not request.user.is_editor:
         messages.error(request, "Only editors can approve articles.")
         return redirect("dashboard")
@@ -159,20 +206,21 @@ def approve_articles(request):
     if request.method == "POST":
         article_id = request.POST.get("article_id")
         action = request.POST.get("action")
-        article = get_object_or_404(Article.objects.select_related("author", "publisher"), pk=article_id)
+        article = get_object_or_404(
+            Article.objects.select_related("author", "publisher"),
+            pk=article_id,
+        )
 
         if action == "approve":
             article.status = Article.STATUS_APPROVED
             article.approved_by = request.user
             article.save()
 
-            # Notify all relevant subscribers:
-            # 1) direct article subscribers
-            # 2) subscribers to the article's publisher
-            # 3) subscribers to the article's journalist/author
             article_subscribers = article.subscribers.all()
             publisher_subscribers = (
-                article.publisher.subscribers.all() if article.publisher else CustomUser.objects.none()
+                article.publisher.subscribers.all()
+                if article.publisher
+                else CustomUser.objects.none()
             )
             journalist_subscribers = article.author.journalist_subscribers.all()
 
@@ -201,7 +249,10 @@ def approve_articles(request):
 
             messages.success(
                 request,
-                f'"{article.title}" was approved and all relevant subscribers were notified.',
+                (
+                    f'"{article.title}" was approved and all relevant '
+                    "subscribers were notified."
+                ),
             )
 
         elif action == "reject":
@@ -220,6 +271,7 @@ def approve_articles(request):
 
 @login_required
 def my_subscriptions(request):
+    """Display the current reader's subscribed publishers, journalists, and articles."""
     if not request.user.is_reader:
         return HttpResponseForbidden("Only readers can view subscriptions.")
 
@@ -240,6 +292,7 @@ def my_subscriptions(request):
 
 @login_required
 def subscribed_articles(request):
+    """Display all approved articles subscribed to by the current reader."""
     if not request.user.is_reader:
         return HttpResponseForbidden("Only readers can view subscribed articles.")
 
@@ -252,6 +305,7 @@ def subscribed_articles(request):
 
 @login_required
 def subscribe_article(request, pk):
+    """Subscribe the current reader to a specific approved article."""
     if not request.user.is_reader:
         return HttpResponseForbidden("Only readers can subscribe to articles.")
 
@@ -263,6 +317,7 @@ def subscribe_article(request, pk):
 
 @login_required
 def unsubscribe_article(request, pk):
+    """Remove the current reader's subscription from a specific approved article."""
     if not request.user.is_reader:
         return HttpResponseForbidden("Only readers can manage article subscriptions.")
 
@@ -274,6 +329,7 @@ def unsubscribe_article(request, pk):
 
 @login_required
 def subscribe_publisher(request, publisher_id):
+    """Subscribe the current reader to a publisher."""
     if not request.user.is_reader:
         return HttpResponseForbidden("Only readers can subscribe to publishers.")
 
@@ -285,6 +341,7 @@ def subscribe_publisher(request, publisher_id):
 
 @login_required
 def subscribe_journalist(request, user_id):
+    """Subscribe the current reader to a journalist."""
     if not request.user.is_reader:
         return HttpResponseForbidden("Only readers can subscribe to journalists.")
 
@@ -299,25 +356,41 @@ def subscribe_journalist(request, user_id):
 
 
 class ArticleListCreateAPIView(generics.ListCreateAPIView):
+    """API endpoint for listing articles and allowing journalists to create them."""
+
     serializer_class = ArticleSerializer
     permission_classes = [IsJournalistOrReadOnly]
 
     def get_queryset(self):
+        """Return articles visible to the current user."""
         user = self.request.user
 
         if user.is_authenticated and getattr(user, "is_editor", False):
-            return Article.objects.select_related("author", "publisher", "newsletter").all()
+            return Article.objects.select_related(
+                "author",
+                "publisher",
+                "newsletter",
+            ).all()
 
         if user.is_authenticated:
-            return Article.objects.select_related("author", "publisher", "newsletter").filter(
-                Q(status=Article.STATUS_APPROVED) | Q(author=user)
-            ).distinct()
+            return (
+                Article.objects.select_related(
+                    "author",
+                    "publisher",
+                    "newsletter",
+                )
+                .filter(Q(status=Article.STATUS_APPROVED) | Q(author=user))
+                .distinct()
+            )
 
-        return Article.objects.select_related("author", "publisher", "newsletter").filter(
-            status=Article.STATUS_APPROVED
-        )
+        return Article.objects.select_related(
+            "author",
+            "publisher",
+            "newsletter",
+        ).filter(status=Article.STATUS_APPROVED)
 
     def perform_create(self, serializer):
+        """Create an article for the current journalist user."""
         user = self.request.user
 
         if not user.is_journalist:
@@ -332,29 +405,51 @@ class ArticleListCreateAPIView(generics.ListCreateAPIView):
 
 
 class ArticleDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """API endpoint for retrieving, updating, and deleting a single article."""
+
     serializer_class = ArticleSerializer
 
     def get_queryset(self):
+        """Return articles accessible to the current user."""
         user = self.request.user
 
         if user.is_authenticated and getattr(user, "is_editor", False):
-            return Article.objects.select_related("author", "publisher", "newsletter").all()
+            return Article.objects.select_related(
+                "author",
+                "publisher",
+                "newsletter",
+            ).all()
 
         if user.is_authenticated:
-            return Article.objects.select_related("author", "publisher", "newsletter").filter(
-                Q(status=Article.STATUS_APPROVED) | Q(author=user)
-            ).distinct()
+            return (
+                Article.objects.select_related(
+                    "author",
+                    "publisher",
+                    "newsletter",
+                )
+                .filter(Q(status=Article.STATUS_APPROVED) | Q(author=user))
+                .distinct()
+            )
 
-        return Article.objects.select_related("author", "publisher", "newsletter").filter(
-            status=Article.STATUS_APPROVED
-        )
+        return Article.objects.select_related(
+            "author",
+            "publisher",
+            "newsletter",
+        ).filter(status=Article.STATUS_APPROVED)
 
     def get_permissions(self):
+        """Return permissions based on the request method."""
         if self.request.method in ["PUT", "PATCH", "DELETE"]:
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
     def update(self, request, *args, **kwargs):
+        """
+        Update an article.
+
+        Editors can edit any article. Journalists can edit only their own
+        articles, and approved edits are sent back to pending review.
+        """
         article = self.get_object()
 
         if request.user.is_reader:
@@ -380,16 +475,20 @@ class ArticleDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         raise PermissionDenied("You do not have permission to edit this article.")
 
     def destroy(self, request, *args, **kwargs):
+        """Allow only editors to delete articles."""
         if not request.user.is_editor:
             raise PermissionDenied("Only editors can delete articles.")
         return super().destroy(request, *args, **kwargs)
 
 
 class SubscribedArticlesAPIView(generics.ListAPIView):
+    """API endpoint for listing a reader's subscribed approved articles."""
+
     serializer_class = ArticleSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """Return subscribed approved articles for the current reader."""
         user = self.request.user
 
         if not user.is_reader:
@@ -401,10 +500,15 @@ class SubscribedArticlesAPIView(generics.ListAPIView):
 
 
 class PendingArticlesAPIView(generics.ListAPIView):
+    """API endpoint for listing pending articles for editors."""
+
     serializer_class = ArticleSerializer
     permission_classes = [permissions.IsAuthenticated, IsEditor]
 
     def get_queryset(self):
-        return Article.objects.select_related("author", "publisher", "newsletter").filter(
-            status=Article.STATUS_PENDING
-        )
+        """Return all pending articles."""
+        return Article.objects.select_related(
+            "author",
+            "publisher",
+            "newsletter",
+        ).filter(status=Article.STATUS_PENDING)

@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsapp', '0002_alter_article_options_remove_article_approved_and_more'),
+        ("newsapp", "0002_alter_article_options_remove_article_approved_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customuser',
-            name='subscribed_articles',
-            field=models.ManyToManyField(blank=True, related_name='subscribers', to='newsapp.article'),
+            model_name="customuser",
+            name="subscribed_articles",
+            field=models.ManyToManyField(
+                blank=True, related_name="subscribers", to="newsapp.article"
+            ),
         ),
     ]

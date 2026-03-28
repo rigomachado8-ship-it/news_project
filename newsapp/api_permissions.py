@@ -20,6 +20,5 @@ class IsJournalistOrReadOnly(BasePermission):
 class IsEditor(BasePermission):
     def has_permission(self, request, view):
         return bool(
-            request.user.is_authenticated
-            and getattr(request.user, "is_editor", False)
+            request.user.is_authenticated and getattr(request.user, "is_editor", False)
         )

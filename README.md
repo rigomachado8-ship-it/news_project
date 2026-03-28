@@ -4,13 +4,15 @@
 This is a Django and Django REST Framework news platform with role-based access for Readers, Journalists, and Editors.
 
 The project includes:
-- a MariaDB database configuration
-- custom user roles
-- web registration and login
-- role-based article management
-- editor approval workflow
-- subscription features
+- MariaDB database configuration
+- Custom user roles
+- Web registration and login
+- Role-based article management
+- Editor approval workflow
+- Subscription features
 - REST API endpoints with JWT authentication
+
+---
 
 ## User Roles
 
@@ -34,12 +36,16 @@ The project includes:
 - Approve or reject submitted articles
 - Create and edit articles
 
+---
+
 ## Technology Stack
 - Python
 - Django
 - Django REST Framework
 - Simple JWT
 - MariaDB
+
+---
 
 ## Main Features
 - Custom user model with role support
@@ -50,6 +56,8 @@ The project includes:
 - Subscription system
 - API endpoints for article data
 - JWT token endpoints for API authentication
+
+---
 
 ## API Endpoints
 
@@ -64,6 +72,8 @@ The project includes:
 - `GET /api/articles/subscribed/`
 - `GET /api/articles/pending/`
 
+---
+
 ## Web Routes
 - `/`
 - `/register/`
@@ -75,9 +85,25 @@ The project includes:
 - `/subscriptions/`
 - `/subscriptions/articles/`
 
+---
+
+## Code Quality
+
+This project follows Python best practices and coding standards:
+
+- Code formatted using **Black**
+- PEP8 compliance verified using **Flake8**
+- All modules, classes, and functions include **docstrings**
+- Clean and maintainable code structure
+
+---
+
 ## Setup Instructions
 
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/rigomachado8-ship-it/news_project.git
 cd news_project/news_project
+
+#Author
+#Rodrigo Machado
