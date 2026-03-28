@@ -159,24 +159,39 @@ def approve_articles(request):
     if request.method == "POST":
         article_id = request.POST.get("article_id")
         action = request.POST.get("action")
-        article = get_object_or_404(Article, pk=article_id)
+        article = get_object_or_404(Article.objects.select_related("author", "publisher"), pk=article_id)
 
         if action == "approve":
             article.status = Article.STATUS_APPROVED
             article.approved_by = request.user
             article.save()
 
-            subscribers = article.subscribers.all()
-            recipient_emails = [user.email for user in subscribers if user.email]
+            # Notify all relevant subscribers:
+            # 1) direct article subscribers
+            # 2) subscribers to the article's publisher
+            # 3) subscribers to the article's journalist/author
+            article_subscribers = article.subscribers.all()
+            publisher_subscribers = (
+                article.publisher.subscribers.all() if article.publisher else CustomUser.objects.none()
+            )
+            journalist_subscribers = article.author.journalist_subscribers.all()
+
+            recipients = (
+                article_subscribers | publisher_subscribers | journalist_subscribers
+            ).distinct()
+
+            recipient_emails = [user.email for user in recipients if user.email]
 
             if recipient_emails:
+                publisher_name = article.publisher.name if article.publisher else "None"
+
                 send_mail(
-                    subject=f"New Article: {article.title}",
+                    subject=f"New Article Published: {article.title}",
                     message=(
-                        f'A new article has been published.\n\n'
+                        f"A new article has been published.\n\n"
                         f"Title: {article.title}\n"
                         f"Author: {article.author.username}\n"
-                        f"Publisher: {article.publisher if article.publisher else 'None'}\n\n"
+                        f"Publisher: {publisher_name}\n\n"
                         f"{article.content}"
                     ),
                     from_email=None,
@@ -184,7 +199,10 @@ def approve_articles(request):
                     fail_silently=True,
                 )
 
-            messages.success(request, f'"{article.title}" was approved and subscribers notified.')
+            messages.success(
+                request,
+                f'"{article.title}" was approved and all relevant subscribers were notified.',
+            )
 
         elif action == "reject":
             article.status = Article.STATUS_REJECTED
