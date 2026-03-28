@@ -6,14 +6,12 @@
 <h1>Subscribed Articles</h1>
 
 {% for article in articles %}
-    <div class="card">
-        <h2>
-            <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
-        </h2>
-        <p><strong>Author:</strong> {{ article.author.username }}</p>
-        <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
-    </div>
+    <hr>
+    <h2><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></h2>
+    <p><strong>Author:</strong> {{ article.author.username }}</p>
+    <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
+    <p><strong>Status:</strong> {{ article.status }}</p>
 {% empty %}
-    <p>No articles found from your subscriptions.</p>
+    <p>You have not subscribed to any articles yet.</p>
 {% endfor %}
 {% endblock %}

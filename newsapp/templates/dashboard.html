@@ -4,37 +4,35 @@
 
 {% block content %}
 <h1>Dashboard</h1>
-<p>Welcome, {{ user.username }}. Your role is <strong>{{ user.role }}</strong>.</p>
 
 {% if user.role == 'reader' %}
-    <div class="card">
-        <h2>Reader Actions</h2>
-        <p>You can browse approved articles and manage subscriptions.</p>
-    </div>
+    <p><a href="{% url 'my_subscriptions' %}">My Subscriptions</a></p>
+    <p><a href="{% url 'subscribed_articles' %}">Subscribed Articles</a></p>
 {% endif %}
 
-{% if user.role == 'journalist' or user.role == 'editor' %}
-    <div class="card">
-        <h2>My Articles</h2>
-        {% for article in my_articles %}
-            <p>
-                <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
-                — {{ article.status }}
-            </p>
-        {% empty %}
-            <p>No articles yet.</p>
-        {% endfor %}
-    </div>
+{% if user.role == 'journalist' %}
+    <p><a href="{% url 'create_article' %}">Create Article</a></p>
+
+    <h2>My Articles</h2>
+    {% for article in my_articles %}
+        <p>
+            <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+            -
+            <a href="{% url 'edit_article' article.pk %}">Edit</a>
+        </p>
+    {% empty %}
+        <p>You have not created any articles yet.</p>
+    {% endfor %}
 {% endif %}
 
 {% if user.role == 'editor' %}
-    <div class="card">
-        <h2>Pending Review</h2>
-        {% for article in pending_articles %}
-            <p>{{ article.title }} by {{ article.author.username }}</p>
-        {% empty %}
-            <p>No pending articles right now.</p>
-        {% endfor %}
-    </div>
+    <p><a href="{% url 'approve_articles' %}">Review Pending Articles</a></p>
+
+    <h2>Pending Articles</h2>
+    {% for article in pending_articles %}
+        <p><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></p>
+    {% empty %}
+        <p>No pending articles.</p>
+    {% endfor %}
 {% endif %}
 {% endblock %}

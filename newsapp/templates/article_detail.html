@@ -15,7 +15,17 @@
 
 <p>{{ article.content }}</p>
 
-{% if user.is_authenticated and user == article.author or user.is_authenticated and user.role == 'editor' %}
+{% if user.is_authenticated and user.role == 'reader' and article.status == 'approved' %}
+    {% if is_subscribed %}
+        <p><a href="{% url 'unsubscribe_article' article.pk %}">Unsubscribe from article</a></p>
+    {% else %}
+        <p><a href="{% url 'subscribe_article' article.pk %}">Subscribe to article</a></p>
+    {% endif %}
+{% endif %}
+
+{% if user.is_authenticated and user.role == 'editor' %}
+    <p><a href="{% url 'edit_article' article.pk %}">Edit Article</a></p>
+{% elif user.is_authenticated and user.role == 'journalist' and user == article.author %}
     <p><a href="{% url 'edit_article' article.pk %}">Edit Article</a></p>
 {% endif %}
 {% endblock %}

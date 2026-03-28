@@ -5,31 +5,39 @@
 {% block content %}
 <h1>Approved Articles</h1>
 
+{% if user.is_authenticated and user.role == 'journalist' %}
+    <p><a href="{% url 'create_article' %}">Create Article</a></p>
+{% endif %}
+
+{% if user.is_authenticated and user.role == 'reader' %}
+    <p>
+        <a href="{% url 'subscribed_articles' %}">Subscribed Articles</a> |
+        <a href="{% url 'my_subscriptions' %}">My Subscriptions</a>
+    </p>
+{% endif %}
+
 {% for article in articles %}
-    <div class="card">
-        <h2>
-            <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
-        </h2>
-        <p><strong>Author:</strong> {{ article.author.username }}</p>
-        <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
-        <p><strong>Status:</strong> {{ article.status }}</p>
+    <hr>
+    <h2><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></h2>
+    <p><strong>Author:</strong> {{ article.author.username }}</p>
+    <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
+    <p><strong>Status:</strong> {{ article.status }}</p>
 
-        {% if user.is_authenticated and article.publisher %}
-            <p>
-                <a href="{% url 'subscribe_publisher' article.publisher.id %}">
-                    Subscribe to publisher
-                </a>
-            </p>
-        {% endif %}
+    {% if user.is_authenticated and user.role == 'reader' and article.publisher %}
+        <p>
+            <a href="{% url 'subscribe_publisher' article.publisher.pk %}">
+                Subscribe to publisher
+            </a>
+        </p>
+    {% endif %}
 
-        {% if user.is_authenticated and article.author.role == 'journalist' %}
-            <p>
-                <a href="{% url 'subscribe_journalist' article.author.id %}">
-                    Subscribe to journalist
-                </a>
-            </p>
-        {% endif %}
-    </div>
+    {% if user.is_authenticated and user.role == 'reader' and article.author.role == 'journalist' %}
+        <p>
+            <a href="{% url 'subscribe_journalist' article.author.pk %}">
+                Subscribe to journalist
+            </a>
+        </p>
+    {% endif %}
 {% empty %}
     <p>No approved articles available.</p>
 {% endfor %}

@@ -11,6 +11,15 @@ class Publisher(models.Model):
         return self.name
 
 
+class Newsletter(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
 class CustomUser(AbstractUser):
     ROLE_READER = "reader"
     ROLE_EDITOR = "editor"
@@ -27,16 +36,24 @@ class CustomUser(AbstractUser):
         choices=ROLE_CHOICES,
         default=ROLE_READER,
     )
+
     subscribed_publishers = models.ManyToManyField(
         Publisher,
         blank=True,
         related_name="subscribers",
     )
+
     subscribed_journalists = models.ManyToManyField(
         "self",
         blank=True,
         symmetrical=False,
         related_name="journalist_subscribers",
+    )
+
+    subscribed_articles = models.ManyToManyField(
+        "Article",
+        blank=True,
+        related_name="subscribers",
     )
 
     def __str__(self):
@@ -53,15 +70,6 @@ class CustomUser(AbstractUser):
     @property
     def is_journalist(self):
         return self.role == self.ROLE_JOURNALIST
-
-
-class Newsletter(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
 
 
 class Article(models.Model):
@@ -85,6 +93,7 @@ class Article(models.Model):
         on_delete=models.CASCADE,
         related_name="articles",
     )
+
     publisher = models.ForeignKey(
         Publisher,
         on_delete=models.SET_NULL,
@@ -92,6 +101,7 @@ class Article(models.Model):
         blank=True,
         related_name="articles",
     )
+
     newsletter = models.ForeignKey(
         Newsletter,
         on_delete=models.SET_NULL,
@@ -105,6 +115,7 @@ class Article(models.Model):
         choices=STATUS_CHOICES,
         default=STATUS_PENDING,
     )
+
     approved_by = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,
@@ -112,6 +123,7 @@ class Article(models.Model):
         blank=True,
         related_name="approved_articles",
     )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
