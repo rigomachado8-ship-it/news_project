@@ -1,103 +1,234 @@
-# News Project
+# 📰 News Project
 
-## Overview
-This is a Django and Django REST Framework news platform with role-based access for Readers, Journalists, and Editors.
+A Django-based news publishing platform that supports role-based access for Readers, Journalists, and Editors.
 
-The application allows:
-- Journalists to create and submit articles
-- Editors to review and approve articles
-- Readers to view approved articles and subscribe to content
-- Articles to be exposed via a REST API
+Users can create, manage, review, and subscribe to articles, publishers, and newsletters.
 
 ---
 
-## Features
+## 📌 Features
 
-- Custom user model with role-based access
-- Groups and permissions (Reader, Journalist, Editor)
-- Article creation and approval workflow
-- Subscription system (publishers and journalists)
-- REST API with role-based authorization
-- JWT authentication for API access
-- MariaDB/MySQL database integration
+### 👤 User Roles
 
----
+* **Reader**
 
-## Technology Stack
+  * View approved articles
+  * Subscribe to articles, publishers, and journalists
 
-- Python
-- Django
-- Django REST Framework
-- Simple JWT (authentication)
-- MariaDB / MySQL
+* **Journalist**
 
----
+  * Create, edit, and delete their own articles (only before approval)
+  * Submit articles for review
 
-## User Roles
+* **Editor**
 
-### Reader
-- View approved articles
-- Subscribe to publishers and journalists
-- View subscribed content
-
-### Journalist
-- Create and edit articles
-- Submit articles for review
-- Manage newsletters
-
-### Editor
-- Review submitted articles
-- Approve or reject articles
-- Manage content
+  * Approve or reject articles
+  * Manage all content
+  * Create publishers and newsletters
+  * Manage user profiles
 
 ---
 
-## REST API Design
+### 📰 Article Management
 
-### Endpoints
-
-- `GET /api/articles/`  
-  Returns all approved articles
-
-- `GET /api/articles/subscribed/`  
-  Returns articles from subscribed publishers/journalists
-
-- `GET /api/articles/<id>/`  
-  Retrieve a single article
-
-- `POST /api/articles/`  
-  Create article (Journalists only)
-
-- `PUT /api/articles/<id>/`  
-  Update article (Editors/Journalists)
-
-- `DELETE /api/articles/<id>/`  
-  Delete article (Editors/Journalists)
+* Create, edit, delete articles
+* Approval workflow (Draft → Pending → Approved/Rejected)
+* Email notifications to subscribers when approved
 
 ---
 
-### Authentication
+### 👤 Profile Management (CRUD)
 
-- JWT token authentication
-- `POST /api/token/`
-- `POST /api/token/refresh/`
-
----
-
-### Authorization
-
-- Reader: read-only access
-- Journalist: create/update/delete own content
-- Editor: approve, update, delete articles
+* View profile
+* Edit profile
+* Delete profile
+* Role-based permissions enforced
 
 ---
 
-## Setup Instructions
+### 🏢 Publisher & Newsletter
 
-### 1. Clone the repository
+* Editors can create publishers
+* Editors & journalists can create newsletters
+* Articles can be linked to publishers/newsletters
+
+---
+
+### 🔐 Permissions
+
+* Journalists can only delete their own articles **before approval**
+* Editors can manage all content
+* Users can only manage their own profiles (unless editor)
+
+---
+
+## 🛠️ Tech Stack
+
+* Python 3.x
+* Django
+* Django REST Framework
+* MariaDB / MySQL
+* HTML (Django Templates)
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1️⃣ Clone the Repository
+
 ```bash
 git clone https://github.com/rigomachado8-ship-it/news_project.git
 cd news_project
+```
 
-#Author
-#Rodrigo Machado
+---
+
+### 2️⃣ Create Virtual Environment
+
+```bash
+python -m venv venv
+source venv/bin/activate  # Mac/Linux
+# OR
+venv\Scripts\activate     # Windows
+```
+
+---
+
+### 3️⃣ Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 🗄️ Database Setup (MariaDB/MySQL)
+
+### 4️⃣ Open MySQL
+
+```bash
+mysql -u root -p
+```
+
+---
+
+### 5️⃣ Create Database
+
+```sql
+CREATE DATABASE news_project_db;
+```
+
+If it already exists, ignore the error.
+
+---
+
+### 6️⃣ Exit MySQL
+
+```sql
+EXIT;
+```
+
+---
+
+### 7️⃣ Set Environment Variables
+
+Mac/Linux:
+
+```bash
+export DB_NAME=news_project_db
+export DB_USER=root
+export DB_PASSWORD=yourpassword
+export DB_HOST=localhost
+export DB_PORT=3306
+```
+
+---
+
+### 8️⃣ Apply Migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+### 9️⃣ Create Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+### 🔟 Run the Server
+
+```bash
+python manage.py runserver
+```
+
+Open:
+
+```
+http://127.0.0.1:8000/
+```
+
+---
+
+## 🏗️ System Design Overview
+
+The application follows Django’s Model-View-Template architecture:
+
+* **Models:** Define entities (Article, User, Publisher, Newsletter)
+* **Views:** Handle logic and enforce permissions
+* **Templates:** Render UI
+* **API:** Built with Django REST Framework
+
+---
+
+## 🔐 Permission Design
+
+* Journalists:
+
+  * Manage their own articles
+  * Can delete only before approval
+
+* Editors:
+
+  * Approve/reject content
+  * Manage all users and data
+
+* Users:
+
+  * Can manage their own profiles only
+
+---
+
+## 🧯 Troubleshooting
+
+### MySQL Access Denied
+
+Ensure DB_PASSWORD is correct and environment variables are set.
+
+### Database Already Exists
+
+Safe to ignore.
+
+---
+
+## 📂 Project Structure
+
+```
+news_project/
+├── newsapp/
+├── Planning/
+├── screenshots/
+├── manage.py
+└── requirements.txt
+```
+
+---
+
+## 👨‍💻 Author
+
+Rodrigo Machado
