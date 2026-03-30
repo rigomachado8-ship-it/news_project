@@ -5,7 +5,7 @@ Forms for user authentication, registration, and article creation/editing.
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-from .models import Article, CustomUser
+from .models import Article, CustomUser, Newsletter, Publisher
 
 
 class CustomUserRegisterForm(UserCreationForm):
@@ -46,6 +46,26 @@ class CustomLoginForm(AuthenticationForm):
 
     username = forms.CharField(max_length=150)
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+class PublisherForm(forms.ModelForm):
+    """Form for creating and editing publishers."""
+
+    class Meta:
+        """Metadata for the publisher form."""
+
+        model = Publisher
+        fields = ["name", "description"]
+
+
+class NewsletterForm(forms.ModelForm):
+    """Form for creating and editing newsletters."""
+
+    class Meta:
+        """Metadata for the newsletter form."""
+
+        model = Newsletter
+        fields = ["title", "description"]
 
 
 class ArticleForm(forms.ModelForm):

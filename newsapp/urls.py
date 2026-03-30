@@ -11,14 +11,20 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(), name="logout"),
     path("dashboard/", views.dashboard_view, name="dashboard"),
     path("create/", views.create_article, name="create_article"),
+    path("publishers/create/", views.create_publisher, name="create_publisher"),
+    path("newsletters/create/", views.create_newsletter, name="create_newsletter"),
     path("article/<int:pk>/edit/", views.edit_article, name="edit_article"),
     path("editor/approve/", views.approve_articles, name="approve_articles"),
     path("subscriptions/", views.my_subscriptions, name="my_subscriptions"),
     path(
-        "subscriptions/articles/", views.subscribed_articles, name="subscribed_articles"
+        "subscriptions/articles/",
+        views.subscribed_articles,
+        name="subscribed_articles",
     ),
     path(
-        "subscribe/article/<int:pk>/", views.subscribe_article, name="subscribe_article"
+        "subscribe/article/<int:pk>/",
+        views.subscribe_article,
+        name="subscribe_article",
     ),
     path(
         "unsubscribe/article/<int:pk>/",

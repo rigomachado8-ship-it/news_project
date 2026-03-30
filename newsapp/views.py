@@ -1,6 +1,6 @@
 """
 Views for authentication, article management, subscriptions,
-and article-related API endpoints.
+publisher/newsletter creation, and article-related API endpoints.
 """
 
 from django.contrib import messages
@@ -16,8 +16,14 @@ from rest_framework import generics, permissions
 from rest_framework.exceptions import PermissionDenied
 
 from .api_permissions import IsEditor, IsJournalistOrReadOnly
-from .forms import ArticleForm, CustomLoginForm, CustomUserRegisterForm
-from .models import Article, CustomUser, Publisher
+from .forms import (
+    ArticleForm,
+    CustomLoginForm,
+    CustomUserRegisterForm,
+    NewsletterForm,
+    PublisherForm,
+)
+from .models import Article, CustomUser, Newsletter, Publisher
 from .serializers import ArticleSerializer
 
 
@@ -54,9 +60,9 @@ def login_view(request):
 
 def article_list(request):
     """Display all approved articles."""
-    articles = Article.objects.select_related("author", "publisher").filter(
-        status=Article.STATUS_APPROVED
-    )
+    articles = Article.objects.select_related(
+        "author", "publisher", "newsletter"
+    ).filter(status=Article.STATUS_APPROVED)
     return render(request, "article_list.html", {"articles": articles})
 
 
@@ -97,12 +103,52 @@ def article_detail(request, pk):
 
 @login_required
 def dashboard_view(request):
-    """Display the logged-in user's articles and all pending articles."""
+    """Display the logged-in user's dashboard content."""
     context = {
         "my_articles": Article.objects.filter(author=request.user),
         "pending_articles": Article.objects.filter(status=Article.STATUS_PENDING),
+        "publishers": Publisher.objects.all(),
+        "newsletters": Newsletter.objects.all(),
     }
     return render(request, "dashboard.html", context)
+
+
+@login_required
+def create_publisher(request):
+    """Allow editors to create publishers."""
+    if not request.user.is_editor:
+        messages.error(request, "Only editors can create publishers.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = PublisherForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Publisher created successfully.")
+            return redirect("dashboard")
+    else:
+        form = PublisherForm()
+
+    return render(request, "create_publisher.html", {"form": form})
+
+
+@login_required
+def create_newsletter(request):
+    """Allow editors and journalists to create newsletters."""
+    if not (request.user.is_editor or request.user.is_journalist):
+        messages.error(request, "You do not have permission to create newsletters.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = NewsletterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Newsletter created successfully.")
+            return redirect("dashboard")
+    else:
+        form = NewsletterForm()
+
+    return render(request, "create_newsletter.html", {"form": form})
 
 
 @login_required

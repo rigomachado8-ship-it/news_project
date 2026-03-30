@@ -90,10 +90,13 @@
 
             {% if user.is_journalist %}
                 <a href="{% url 'create_article' %}">Create Article</a>
+                <a href="{% url 'create_newsletter' %}">Create Newsletter</a>
             {% endif %}
 
             {% if user.is_editor %}
                 <a href="{% url 'approve_articles' %}">Approve Articles</a>
+                <a href="{% url 'create_publisher' %}">Create Publisher</a>
+                <a href="{% url 'create_newsletter' %}">Create Newsletter</a>
             {% endif %}
 
             <form method="post" action="{% url 'logout' %}">
