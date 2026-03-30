@@ -1,27 +1,39 @@
+"""
+Serializers for publishers, newsletters, users, profiles, and articles.
+"""
+
 from rest_framework import serializers
 
 from .models import Article, CustomUser, Newsletter, Publisher
 
 
 class PublisherSerializer(serializers.ModelSerializer):
+    """Serialize publisher data."""
+
     class Meta:
         model = Publisher
         fields = ["id", "name", "description"]
 
 
 class NewsletterSerializer(serializers.ModelSerializer):
+    """Serialize newsletter data."""
+
     class Meta:
         model = Newsletter
         fields = ["id", "title", "description", "created_at"]
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serialize user summary data."""
+
     class Meta:
         model = CustomUser
         fields = ["id", "username", "email", "role"]
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    """Serialize editable profile data."""
+
     class Meta:
         model = CustomUser
         fields = ["id", "username", "email", "role"]
@@ -35,8 +47,21 @@ class ProfileSerializer(serializers.ModelSerializer):
                 )
         return value
 
+    def validate_email(self, value):
+        queryset = CustomUser.objects.filter(email__iexact=value)
+        if self.instance:
+            queryset = queryset.exclude(pk=self.instance.pk)
+
+        if queryset.exists():
+            raise serializers.ValidationError(
+                "An account with this email already exists."
+            )
+        return value
+
 
 class ArticleSerializer(serializers.ModelSerializer):
+    """Serialize article data with nested related objects."""
+
     author = UserSerializer(read_only=True)
     publisher = PublisherSerializer(read_only=True)
     newsletter = NewsletterSerializer(read_only=True)

@@ -3,8 +3,8 @@ from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 class IsJournalistOrReadOnly(BasePermission):
     """
-    Allow anyone to read articles.
-    Only journalists or editors can create/update article content.
+    Read access for everyone.
+    Write/create access for authenticated journalists or editors.
     """
 
     def has_permission(self, request, view):
@@ -21,7 +21,7 @@ class IsJournalistOrReadOnly(BasePermission):
 
 
 class IsEditor(BasePermission):
-    """Allow editors only."""
+    """Editor-only access."""
 
     def has_permission(self, request, view):
         return bool(
@@ -31,7 +31,7 @@ class IsEditor(BasePermission):
 
 
 class IsOwnerOrEditor(BasePermission):
-    """Allow profile owners or editors."""
+    """Allow object owners or editors."""
 
     def has_object_permission(self, request, view, obj):
         return bool(

@@ -3,13 +3,13 @@
 {% block title %}Edit Profile{% endblock %}
 
 {% block content %}
-<div class="form-card">
-    <h1 class="page-title">Edit Profile</h1>
-    <p class="muted">Update account details below.</p>
+<div class="card">
+    <h1>Edit Profile</h1>
 
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
+
         <div class="actions">
             <button type="submit">Save Changes</button>
             <a class="btn btn-secondary" href="{% url 'profile_detail' profile_user.pk %}">Cancel</a>

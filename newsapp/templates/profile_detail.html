@@ -4,13 +4,11 @@
 
 {% block content %}
 <div class="card">
-    <h1 class="page-title">Profile</h1>
+    <h1>Profile</h1>
 
-    <div class="meta">
-        <span><strong>Username:</strong> {{ profile_user.username }}</span>
-        <span><strong>Email:</strong> {{ profile_user.email|default:"No email set" }}</span>
-        <span><strong>Role:</strong> {{ profile_user.get_role_display }}</span>
-    </div>
+    <p><strong>Username:</strong> {{ profile_user.username }}</p>
+    <p><strong>Email:</strong> {{ profile_user.email }}</p>
+    <p><strong>Role:</strong> {{ profile_user.get_role_display }}</p>
 
     <div class="actions">
         <a class="btn btn-primary" href="{% url 'profile_update' profile_user.pk %}">Edit Profile</a>

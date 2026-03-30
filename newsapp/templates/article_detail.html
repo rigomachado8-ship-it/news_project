@@ -4,33 +4,31 @@
 
 {% block content %}
 <div class="card">
-    <div class="split">
-        <h1 class="page-title">{{ article.title }}</h1>
+    <h1>{{ article.title }}</h1>
 
+    <p>
         <span class="badge badge-{{ article.status }}">
             {{ article.get_status_display }}
         </span>
-    </div>
+    </p>
 
-    <div class="meta">
-        <span><strong>Author:</strong> {{ article.author.username }}</span>
-        <span><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</span>
-        <span><strong>Newsletter:</strong> {{ article.newsletter|default:"None" }}</span>
-        <span><strong>Created:</strong> {{ article.created_at }}</span>
-        <span><strong>Updated:</strong> {{ article.updated_at }}</span>
-    </div>
+    <p><strong>Author:</strong> {{ article.author.username }}</p>
+    <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
+    <p><strong>Newsletter:</strong> {{ article.newsletter|default:"None" }}</p>
+    <p><strong>Created:</strong> {{ article.created_at }}</p>
+    <p><strong>Updated:</strong> {{ article.updated_at }}</p>
 
-    <div class="article-body">
-        {{ article.content }}
-    </div>
+    <hr>
+
+    <p style="white-space: pre-line;">{{ article.content }}</p>
 
     <div class="actions">
         {% if user.is_authenticated and user == article.author or user.is_authenticated and user.is_editor %}
-            <a class="btn btn-primary" href="{% url 'edit_article' article.pk %}">Edit Article</a>
+            <a class="btn btn-primary" href="{% url 'edit_article' article.pk %}">Edit</a>
         {% endif %}
 
         {% if can_delete %}
-            <a class="btn btn-danger" href="{% url 'delete_article' article.pk %}">Delete Article</a>
+            <a class="btn btn-danger" href="{% url 'delete_article' article.pk %}">Delete</a>
         {% endif %}
 
         {% if user.is_authenticated and user.is_reader %}
@@ -39,7 +37,7 @@
                     Unsubscribe
                 </a>
             {% else %}
-                <a class="btn btn-success" href="{% url 'subscribe_article' article.pk %}">
+                <a class="btn btn-primary" href="{% url 'subscribe_article' article.pk %}">
                     Subscribe
                 </a>
             {% endif %}

@@ -3,14 +3,10 @@
 {% block title %}Delete Article{% endblock %}
 
 {% block content %}
-<div class="form-card">
-    <h1 class="page-title">Delete Article</h1>
-    <p>
-        Are you sure you want to delete <strong>{{ article.title }}</strong>?
-    </p>
-    <p class="muted">
-        Journalists may only delete their own articles before editor approval.
-    </p>
+<div class="card">
+    <h1>Delete Article</h1>
+    <p>Are you sure you want to delete <strong>{{ article.title }}</strong>?</p>
+    <p>Journalists may only delete their own articles before editor approval.</p>
 
     <form method="post">
         {% csrf_token %}

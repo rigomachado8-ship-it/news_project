@@ -7,266 +7,99 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
+            margin: 0;
+            background: #f5f7fb;
+            color: #1f2937;
         }
 
         nav {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-
-        nav a {
-            margin-right: 15px;
-            text-decoration: none;
-        }
-
-        nav form {
-            display: inline;
-            margin: 0;
-            padding: 0;
-        }
-
-        nav button {
-            background: none;
-            border: none;
-            padding: 0;
-            margin-right: 15px;
-            cursor: pointer;
-            text-decoration: none;
-            font: inherit;
-            color: blue;
-        }
-
-        .messages {
-            margin: 20px 0;
-        }
-
-        .message {
-            padding: 10px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            background: #f7f7f7;
-        }
-
-        form p {
-            margin-bottom: 12px;
-        }
-
-        input, select, textarea, button {
-            width: 100%;
-            max-width: 100%;
-            padding: 8px;
-            margin-top: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: auto;
-            cursor: pointer;
-        }
-
-        .card {
-            border: 1px solid #ddd;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <a href="{% url 'article_list' %}">Articles</a>
-
-        {% if user.is_authenticated %}
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-
-            {% if user.is_reader %}
-                <a href="{% url 'my_subscriptions' %}">My Subscriptions</a>
-                <a href="{% url 'subscribed_articles' %}">Subscribed Articles</a>
-            {% endif %}
-
-            {% if user.is_journalist %}
-                <a href="{% url 'create_article' %}">Create Article</a>
-                <a href="{% url 'create_newsletter' %}">Create Newsletter</a>
-            {% endif %}
-
-            {% if user.is_editor %}
-                <a href="{% url 'approve_articles' %}">Approve Articles</a>
-                <a href="{% url 'create_publisher' %}">Create Publisher</a>
-                <a href="{% url 'create_newsletter' %}">Create Newsletter</a>
-            {% endif %}
-
-            <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-            </form>
-        {% else %}
-            <a href="{% url 'register' %}">Register</a>
-            <a href="{% url 'login' %}">Login</a>
-        {% endif %}
-    </nav>
-
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    {% block content %}{% endblock %}
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}News Project{% endblock %}</title>
-    <style>
-        :root {
-            --bg: #f4f7fb;
-            --surface: #ffffff;
-            --surface-soft: #f9fbff;
-            --text: #1f2937;
-            --muted: #6b7280;
-            --primary: #1d4ed8;
-            --primary-dark: #1e40af;
-            --success: #15803d;
-            --warning: #b45309;
-            --danger: #b91c1c;
-            --border: #dbe3ef;
-            --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-            --radius: 16px;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
-            color: var(--text);
-        }
-
-        a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .navbar {
-            background: #0f172a;
+            background: #111827;
             color: white;
-            padding: 18px 24px;
-            box-shadow: var(--shadow);
+            padding: 14px 20px;
         }
 
-        .navbar-inner {
-            max-width: 1200px;
+        .nav-wrap {
+            max-width: 1100px;
             margin: 0 auto;
             display: flex;
-            gap: 16px;
+            gap: 12px;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
         }
 
         .brand {
-            font-size: 1.3rem;
-            font-weight: bold;
             color: white;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 1.15rem;
         }
 
         .nav-links {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             align-items: center;
         }
 
-        .nav-pill {
-            display: inline-block;
-            padding: 10px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
+        nav a {
             color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.08);
+            padding: 8px 12px;
+            border-radius: 8px;
         }
 
-        .nav-pill:hover {
-            background: rgba(255, 255, 255, 0.16);
-            text-decoration: none;
+        nav a:hover {
+            background: rgba(255,255,255,0.16);
         }
 
         .page {
-            max-width: 1200px;
-            margin: 32px auto;
-            padding: 0 20px 40px;
-        }
-
-        .hero,
-        .card,
-        .form-card,
-        .message-list {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-
-        .hero {
-            padding: 28px;
-            margin-bottom: 24px;
-        }
-
-        .hero h1,
-        .page-title {
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 2rem;
-        }
-
-        .hero p,
-        .muted {
-            color: var(--muted);
-        }
-
-        .grid {
-            display: grid;
-            gap: 20px;
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        }
-
-        .grid-3 {
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            max-width: 1100px;
+            margin: 24px auto;
+            padding: 0 18px 40px;
         }
 
         .card {
+            background: white;
+            border-radius: 12px;
             padding: 22px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
         }
 
-        .card h2,
-        .card h3 {
-            margin-top: 0;
-        }
-
-        .meta {
+        .actions {
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
-            margin: 12px 0;
-            color: var(--muted);
-            font-size: 0.95rem;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .btn,
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .btn-primary,
+        button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
         }
 
         .badge {
@@ -277,132 +110,41 @@
             font-weight: bold;
         }
 
-        .badge-draft { background: #e0e7ff; color: #4338ca; }
+        .badge-draft { background: #e0e7ff; color: #3730a3; }
         .badge-pending { background: #fef3c7; color: #92400e; }
         .badge-approved { background: #dcfce7; color: #166534; }
         .badge-rejected { background: #fee2e2; color: #991b1b; }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 18px;
-        }
-
-        .btn,
-        button,
-        input[type="submit"] {
-            border: none;
-            border-radius: 12px;
-            padding: 11px 16px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary,
-        button,
-        input[type="submit"] {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover,
-        button:hover,
-        input[type="submit"]:hover {
-            background: var(--primary-dark);
-            text-decoration: none;
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #111827;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        .form-card {
-            max-width: 760px;
-            padding: 28px;
-        }
-
-        form p {
+        .messages {
             margin-bottom: 18px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
+        .message {
+            background: white;
+            border-left: 4px solid #2563eb;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        form p {
+            margin-bottom: 14px;
         }
 
         input[type="text"],
         input[type="email"],
         input[type="password"],
-        select,
-        textarea {
+        textarea,
+        select {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            font-size: 1rem;
-            background: white;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
         }
 
         textarea {
-            resize: vertical;
-        }
-
-        .message-list {
-            padding: 16px 18px;
-            margin-bottom: 18px;
-        }
-
-        .message {
-            padding: 12px 14px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .success { background: #dcfce7; color: #166534; }
-        .warning { background: #fef3c7; color: #92400e; }
-        .danger { background: #fee2e2; color: #991b1b; }
-        .info { background: #dbeafe; color: #1d4ed8; }
-
-        .article-body {
-            line-height: 1.8;
-            white-space: pre-line;
-        }
-
-        .empty {
-            padding: 24px;
-            border-radius: 14px;
-            background: var(--surface-soft);
-            border: 1px dashed var(--border);
-            color: var(--muted);
-        }
-
-        .split {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
+            min-height: 160px;
         }
 
         .inline-form {
@@ -411,28 +153,30 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-inner">
+    <nav>
+        <div class="nav-wrap">
             <a class="brand" href="{% url 'article_list' %}">News Project</a>
 
             <div class="nav-links">
-                <a class="nav-pill" href="{% url 'article_list' %}">Articles</a>
+                <a href="{% url 'article_list' %}">Articles</a>
 
                 {% if user.is_authenticated %}
-                    <a class="nav-pill" href="{% url 'dashboard' %}">Dashboard</a>
-                    <a class="nav-pill" href="{% url 'profile_detail' user.pk %}">My Profile</a>
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'profile_detail' user.pk %}">My Profile</a>
 
                     {% if user.is_reader %}
-                        <a class="nav-pill" href="{% url 'my_subscriptions' %}">My Subscriptions</a>
-                        <a class="nav-pill" href="{% url 'subscribed_articles' %}">Subscribed Articles</a>
+                        <a href="{% url 'my_subscriptions' %}">My Subscriptions</a>
+                        <a href="{% url 'subscribed_articles' %}">Subscribed Articles</a>
                     {% endif %}
 
                     {% if user.is_journalist or user.is_editor %}
-                        <a class="nav-pill" href="{% url 'create_article' %}">Create Article</a>
+                        <a href="{% url 'create_article' %}">Create Article</a>
+                        <a href="{% url 'create_newsletter' %}">Create Newsletter</a>
                     {% endif %}
 
                     {% if user.is_editor %}
-                        <a class="nav-pill" href="{% url 'approve_articles' %}">Approve Articles</a>
+                        <a href="{% url 'approve_articles' %}">Approve Articles</a>
+                        <a href="{% url 'create_publisher' %}">Create Publisher</a>
                     {% endif %}
 
                     <form class="inline-form" method="post" action="{% url 'logout' %}">
@@ -440,8 +184,8 @@
                         <button type="submit">Logout</button>
                     </form>
                 {% else %}
-                    <a class="nav-pill" href="{% url 'register' %}">Register</a>
-                    <a class="nav-pill" href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'register' %}">Register</a>
+                    <a href="{% url 'login' %}">Login</a>
                 {% endif %}
             </div>
         </div>
@@ -449,9 +193,9 @@
 
     <main class="page">
         {% if messages %}
-            <div class="message-list">
+            <div class="messages">
                 {% for message in messages %}
-                    <div class="message {{ message.tags|default:'info' }}">
+                    <div class="message">
                         {{ message }}
                     </div>
                 {% endfor %}
