@@ -3,98 +3,92 @@
 ## Overview
 This is a Django and Django REST Framework news platform with role-based access for Readers, Journalists, and Editors.
 
-The project includes:
-- MariaDB database configuration
-- Custom user roles
-- Web registration and login
-- Role-based article management
-- Editor approval workflow
-- Subscription features
-- REST API endpoints with JWT authentication
+The application allows:
+- Journalists to create and submit articles
+- Editors to review and approve articles
+- Readers to view approved articles and subscribe to content
+- Articles to be exposed via a REST API
+
+---
+
+## Features
+
+- Custom user model with role-based access
+- Groups and permissions (Reader, Journalist, Editor)
+- Article creation and approval workflow
+- Subscription system (publishers and journalists)
+- REST API with role-based authorization
+- JWT authentication for API access
+- MariaDB/MySQL database integration
+
+---
+
+## Technology Stack
+
+- Python
+- Django
+- Django REST Framework
+- Simple JWT (authentication)
+- MariaDB / MySQL
 
 ---
 
 ## User Roles
 
 ### Reader
-- Register and log in through the website
 - View approved articles
-- Subscribe to publishers
-- Subscribe to journalists
-- View subscribed articles
+- Subscribe to publishers and journalists
+- View subscribed content
 
 ### Journalist
-- Register and log in through the website
-- Create articles
-- Save drafts
+- Create and edit articles
 - Submit articles for review
-- Edit their own articles
+- Manage newsletters
 
 ### Editor
-- Log in through the website
-- Review pending articles
-- Approve or reject submitted articles
-- Create and edit articles
+- Review submitted articles
+- Approve or reject articles
+- Manage content
 
 ---
 
-## Technology Stack
-- Python
-- Django
-- Django REST Framework
-- Simple JWT
-- MariaDB
+## REST API Design
+
+### Endpoints
+
+- `GET /api/articles/`  
+  Returns all approved articles
+
+- `GET /api/articles/subscribed/`  
+  Returns articles from subscribed publishers/journalists
+
+- `GET /api/articles/<id>/`  
+  Retrieve a single article
+
+- `POST /api/articles/`  
+  Create article (Journalists only)
+
+- `PUT /api/articles/<id>/`  
+  Update article (Editors/Journalists)
+
+- `DELETE /api/articles/<id>/`  
+  Delete article (Editors/Journalists)
 
 ---
-
-## Main Features
-- Custom user model with role support
-- Public approved article list
-- Protected dashboard
-- Web authentication system
-- Editor approval workflow
-- Subscription system
-- API endpoints for article data
-- JWT token endpoints for API authentication
-
----
-
-## API Endpoints
 
 ### Authentication
+
+- JWT token authentication
 - `POST /api/token/`
 - `POST /api/token/refresh/`
 
-### Articles
-- `GET /api/articles/`
-- `POST /api/articles/`
-- `GET /api/articles/<id>/`
-- `GET /api/articles/subscribed/`
-- `GET /api/articles/pending/`
-
 ---
 
-## Web Routes
-- `/`
-- `/register/`
-- `/login/`
-- `/logout/`
-- `/dashboard/`
-- `/create/`
-- `/editor/approve/`
-- `/subscriptions/`
-- `/subscriptions/articles/`
+### Authorization
 
----
-
-## Code Quality
-
-This project follows Python best practices and coding standards:
-
-- Code formatted using **Black**
-- PEP8 compliance verified using **Flake8**
-- All modules, classes, and functions include **docstrings**
-- Clean and maintainable code structure
+- Reader: read-only access
+- Journalist: create/update/delete own content
+- Editor: approve, update, delete articles
 
 ---
 
@@ -103,7 +97,7 @@ This project follows Python best practices and coding standards:
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/rigomachado8-ship-it/news_project.git
-cd news_project/news_project
+cd news_project
 
 #Author
 #Rodrigo Machado
