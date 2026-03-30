@@ -3,12 +3,19 @@
 {% block title %}Create Article{% endblock %}
 
 {% block content %}
-<h1>Create Article</h1>
-<p>Journalists can submit drafts or pending articles. Editors can publish approved content.</p>
+<div class="form-card">
+    <h1 class="page-title">Create Article</h1>
+    <p class="muted">
+        Journalists can save drafts or submit for review. Editors can also publish approved content.
+    </p>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save Article</button>
-</form>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="actions">
+            <button type="submit">Save Article</button>
+            <a class="btn btn-secondary" href="{% url 'dashboard' %}">Cancel</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

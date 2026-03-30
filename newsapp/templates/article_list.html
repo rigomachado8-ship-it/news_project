@@ -3,42 +3,45 @@
 {% block title %}Articles{% endblock %}
 
 {% block content %}
-<h1>Approved Articles</h1>
+<div class="hero">
+    <h1>Approved Articles</h1>
+    <p>Browse published content from journalists and editors.</p>
+</div>
 
-{% if user.is_authenticated and user.role == 'journalist' %}
-    <p><a href="{% url 'create_article' %}">Create Article</a></p>
-{% endif %}
+<div class="grid grid-2">
+    {% for article in articles %}
+        <div class="card">
+            <div class="split">
+                <h2><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></h2>
+                <span class="badge badge-approved">Approved</span>
+            </div>
 
-{% if user.is_authenticated and user.role == 'reader' %}
-    <p>
-        <a href="{% url 'subscribed_articles' %}">Subscribed Articles</a> |
-        <a href="{% url 'my_subscriptions' %}">My Subscriptions</a>
-    </p>
-{% endif %}
+            <div class="meta">
+                <span><strong>Author:</strong> {{ article.author.username }}</span>
+                <span><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</span>
+                <span><strong>Newsletter:</strong> {{ article.newsletter|default:"None" }}</span>
+            </div>
 
-{% for article in articles %}
-    <hr>
-    <h2><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></h2>
-    <p><strong>Author:</strong> {{ article.author.username }}</p>
-    <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
-    <p><strong>Status:</strong> {{ article.status }}</p>
+            <p>{{ article.content|truncatewords:30 }}</p>
 
-    {% if user.is_authenticated and user.role == 'reader' and article.publisher %}
-        <p>
-            <a href="{% url 'subscribe_publisher' article.publisher.pk %}">
-                Subscribe to publisher
-            </a>
-        </p>
-    {% endif %}
+            <div class="actions">
+                <a class="btn btn-primary" href="{% url 'article_detail' article.pk %}">Read More</a>
 
-    {% if user.is_authenticated and user.role == 'reader' and article.author.role == 'journalist' %}
-        <p>
-            <a href="{% url 'subscribe_journalist' article.author.pk %}">
-                Subscribe to journalist
-            </a>
-        </p>
-    {% endif %}
-{% empty %}
-    <p>No approved articles available.</p>
-{% endfor %}
+                {% if user.is_authenticated and user.is_reader and article.publisher %}
+                    <a class="btn btn-secondary" href="{% url 'subscribe_publisher' article.publisher.pk %}">
+                        Follow Publisher
+                    </a>
+                {% endif %}
+
+                {% if user.is_authenticated and user.is_reader and article.author.is_journalist %}
+                    <a class="btn btn-secondary" href="{% url 'subscribe_journalist' article.author.pk %}">
+                        Follow Journalist
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="empty">No approved articles available.</div>
+    {% endfor %}
+</div>
 {% endblock %}

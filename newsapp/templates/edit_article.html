@@ -3,12 +3,17 @@
 {% block title %}Edit Article{% endblock %}
 
 {% block content %}
-<h1>Edit Article</h1>
-<p>Update the article below.</p>
+<div class="form-card">
+    <h1 class="page-title">Edit Article</h1>
+    <p class="muted">Update the article below.</p>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Update Article</button>
-</form>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="actions">
+            <button type="submit">Update Article</button>
+            <a class="btn btn-secondary" href="{% url 'article_detail' article.pk %}">Back</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

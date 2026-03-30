@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1 class="page-title">Edit Profile</h1>
+    <p class="muted">Update account details below.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="actions">
+            <button type="submit">Save Changes</button>
+            <a class="btn btn-secondary" href="{% url 'profile_detail' profile_user.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

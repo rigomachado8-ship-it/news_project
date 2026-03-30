@@ -3,53 +3,91 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h1>Dashboard</h1>
+<div class="hero">
+    <h1>Dashboard</h1>
+    <p>Welcome, <strong>{{ user.username }}</strong>. Your role is <strong>{{ user.role }}</strong>.</p>
+</div>
 
-{% if user.role == 'reader' %}
-    <p><a href="{% url 'my_subscriptions' %}">My Subscriptions</a></p>
-    <p><a href="{% url 'subscribed_articles' %}">Subscribed Articles</a></p>
+<div class="grid grid-2">
+    <div class="card">
+        <h2>Account</h2>
+        <p class="muted">Manage your profile and review your permissions.</p>
+        <div class="actions">
+            <a class="btn btn-primary" href="{% url 'profile_detail' user.pk %}">View Profile</a>
+            <a class="btn btn-secondary" href="{% url 'profile_update' user.pk %}">Edit Profile</a>
+        </div>
+    </div>
+
+    {% if user.is_reader %}
+        <div class="card">
+            <h2>Reader Actions</h2>
+            <p class="muted">Browse approved articles and manage your subscriptions.</p>
+            <div class="actions">
+                <a class="btn btn-primary" href="{% url 'article_list' %}">Browse Articles</a>
+                <a class="btn btn-secondary" href="{% url 'my_subscriptions' %}">My Subscriptions</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% if user.is_journalist or user.is_editor %}
+    <div class="hero">
+        <h2>My Articles</h2>
+        <p>Track your drafts, submissions, approvals, and published content.</p>
+    </div>
+
+    <div class="grid grid-2">
+        {% for article in my_articles %}
+            <div class="card">
+                <div class="split">
+                    <h3><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></h3>
+                    <span class="badge badge-{{ article.status }}">{{ article.get_status_display }}</span>
+                </div>
+
+                <div class="meta">
+                    <span><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</span>
+                    <span><strong>Updated:</strong> {{ article.updated_at }}</span>
+                </div>
+
+                <p>{{ article.content|truncatewords:20 }}</p>
+
+                <div class="actions">
+                    <a class="btn btn-primary" href="{% url 'article_detail' article.pk %}">View</a>
+                    <a class="btn btn-secondary" href="{% url 'edit_article' article.pk %}">Edit</a>
+
+                    {% if user.is_editor or article.status != 'approved' %}
+                        <a class="btn btn-danger" href="{% url 'delete_article' article.pk %}">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty">No articles yet.</div>
+        {% endfor %}
+    </div>
 {% endif %}
 
-{% if user.role == 'journalist' %}
-    <p><a href="{% url 'create_article' %}">Create Article</a></p>
-    <p><a href="{% url 'create_newsletter' %}">Create Newsletter</a></p>
+{% if user.is_editor %}
+    <div class="hero">
+        <h2>Pending Review</h2>
+        <p>Approve or reject submissions waiting for editorial review.</p>
+    </div>
 
-    <h2>My Articles</h2>
-    {% for article in my_articles %}
-        <p>
-            <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
-            -
-            <a href="{% url 'edit_article' article.pk %}">Edit</a>
-        </p>
-    {% empty %}
-        <p>You have not created any articles yet.</p>
-    {% endfor %}
-{% endif %}
-
-{% if user.role == 'editor' %}
-    <p><a href="{% url 'approve_articles' %}">Review Pending Articles</a></p>
-    <p><a href="{% url 'create_publisher' %}">Create Publisher</a></p>
-    <p><a href="{% url 'create_newsletter' %}">Create Newsletter</a></p>
-
-    <h2>Pending Articles</h2>
-    {% for article in pending_articles %}
-        <p><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></p>
-    {% empty %}
-        <p>No pending articles.</p>
-    {% endfor %}
-
-    <h2>Available Publishers</h2>
-    {% for publisher in publishers %}
-        <p>{{ publisher.name }}</p>
-    {% empty %}
-        <p>No publishers have been created yet.</p>
-    {% endfor %}
-
-    <h2>Available Newsletters</h2>
-    {% for newsletter in newsletters %}
-        <p>{{ newsletter.title }}</p>
-    {% empty %}
-        <p>No newsletters have been created yet.</p>
-    {% endfor %}
+    <div class="grid grid-2">
+        {% for article in pending_articles %}
+            <div class="card">
+                <h3>{{ article.title }}</h3>
+                <div class="meta">
+                    <span><strong>Author:</strong> {{ article.author.username }}</span>
+                    <span><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</span>
+                </div>
+                <p>{{ article.content|truncatewords:24 }}</p>
+                <div class="actions">
+                    <a class="btn btn-primary" href="{% url 'article_detail' article.pk %}">Review</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty">No pending articles right now.</div>
+        {% endfor %}
+    </div>
 {% endif %}
 {% endblock %}

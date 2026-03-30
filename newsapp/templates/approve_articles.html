@@ -3,23 +3,40 @@
 {% block title %}Approve Articles{% endblock %}
 
 {% block content %}
-<h1>Approve Pending Articles</h1>
+<div class="hero">
+    <h1>Approve Pending Articles</h1>
+    <p>Review pending submissions and decide whether to approve or reject them.</p>
+</div>
 
-{% for article in articles %}
-    <div class="card">
-        <h2>{{ article.title }}</h2>
-        <p><strong>Author:</strong> {{ article.author.username }}</p>
-        <p><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</p>
-        <p>{{ article.content|truncatewords:40 }}</p>
+<div class="grid grid-2">
+    {% for article in articles %}
+        <div class="card">
+            <h2>{{ article.title }}</h2>
 
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="article_id" value="{{ article.id }}">
-            <button type="submit" name="action" value="approve">Approve</button>
-            <button type="submit" name="action" value="reject">Reject</button>
-        </form>
-    </div>
-{% empty %}
-    <p>No pending articles to review.</p>
-{% endfor %}
+            <div class="meta">
+                <span><strong>Author:</strong> {{ article.author.username }}</span>
+                <span><strong>Publisher:</strong> {{ article.publisher|default:"None" }}</span>
+            </div>
+
+            <p>{{ article.content|truncatewords:40 }}</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="article_id" value="{{ article.pk }}">
+
+                <div class="actions">
+                    <button class="btn btn-success" type="submit" name="action" value="approve">
+                        Approve
+                    </button>
+                    <button class="btn btn-warning" type="submit" name="action" value="reject">
+                        Reject
+                    </button>
+                    <a class="btn btn-secondary" href="{% url 'article_detail' article.pk %}">View</a>
+                </div>
+            </form>
+        </div>
+    {% empty %}
+        <div class="empty">No pending articles to review.</div>
+    {% endfor %}
+</div>
 {% endblock %}

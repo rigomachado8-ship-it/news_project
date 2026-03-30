@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1 class="page-title">Profile</h1>
+
+    <div class="meta">
+        <span><strong>Username:</strong> {{ profile_user.username }}</span>
+        <span><strong>Email:</strong> {{ profile_user.email|default:"No email set" }}</span>
+        <span><strong>Role:</strong> {{ profile_user.get_role_display }}</span>
+    </div>
+
+    <div class="actions">
+        <a class="btn btn-primary" href="{% url 'profile_update' profile_user.pk %}">Edit Profile</a>
+        <a class="btn btn-danger" href="{% url 'profile_delete' profile_user.pk %}">Delete Profile</a>
+    </div>
+</div>
+{% endblock %}

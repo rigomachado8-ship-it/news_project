@@ -3,12 +3,17 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<h1>Create Account</h1>
-<p>Register as a Reader, Journalist, or Editor.</p>
+<div class="form-card">
+    <h1 class="page-title">Create Account</h1>
+    <p class="muted">Register as a reader, journalist, or editor.</p>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="actions">
+            <button type="submit">Register</button>
+            <a class="btn btn-secondary" href="{% url 'login' %}">Already have an account?</a>
+        </div>
+    </form>
+</div>
 {% endblock %}
