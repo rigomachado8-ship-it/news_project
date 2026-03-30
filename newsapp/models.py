@@ -43,6 +43,12 @@ class CustomUser(AbstractUser):
         (ROLE_JOURNALIST, "Journalist"),
     )
 
+    email = models.EmailField(
+        unique=True,
+        blank=False,
+        null=False,
+    )
+
     role = models.CharField(
         max_length=20,
         choices=ROLE_CHOICES,

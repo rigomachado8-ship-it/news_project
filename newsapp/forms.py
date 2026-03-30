@@ -11,11 +11,34 @@ from .models import Article, CustomUser
 class CustomUserRegisterForm(UserCreationForm):
     """Form for registering a new user with a selected role."""
 
+    email = forms.EmailField(required=True)
+
     class Meta:
         """Metadata for the registration form."""
 
         model = CustomUser
         fields = ["username", "email", "role", "password1", "password2"]
+
+    def clean_email(self):
+        """Prevent registration with a duplicate email address."""
+        email = self.cleaned_data.get("email", "").strip().lower()
+
+        if CustomUser.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                "An account with this email address already exists."
+            )
+
+        return email
+
+    def save(self, commit=True):
+        """Save the user with a normalised email address."""
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"].strip().lower()
+
+        if commit:
+            user.save()
+
+        return user
 
 
 class CustomLoginForm(AuthenticationForm):
