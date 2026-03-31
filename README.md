@@ -214,6 +214,16 @@ Ensure DB_PASSWORD is correct and environment variables are set.
 
 Safe to ignore.
 
+----
+## Planning Documents
+All planning documents required for the capstone are in the `Planning/` folder, including:
+- functional and non-functional requirements
+- UI/UX planning
+- database normalization
+- ERD
+- API planning
+- testing plan
+
 ---
 
 ## 📂 Project Structure

@@ -5,4 +5,8 @@ db.sqlite3
 .DS_Store
 .env
 .idea/
-.vscode/
+.vscode/venv/
+.env
+db.sqlite3
+__pycache__/
+*.pyc
