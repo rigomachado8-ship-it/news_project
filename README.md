@@ -1,6 +1,14 @@
 # 📰 News Project
 
-A Django-based news publishing platform that supports role-based access for Readers, Journalists, and Editors.
+## 🔗 Repository
+
+https://github.com/rigomachado8-ship-it/news_project
+
+---
+
+## 📖 Overview
+
+A full-stack Django news publishing platform with role-based access, REST API support, Sphinx documentation, and Docker containerization.
 
 Users can create, manage, review, and subscribe to articles, publishers, and newsletters.
 
@@ -10,22 +18,22 @@ Users can create, manage, review, and subscribe to articles, publishers, and new
 
 ### 👤 User Roles
 
-* **Reader**
+**Reader**
 
-  * View approved articles
-  * Subscribe to articles, publishers, and journalists
+* View approved articles
+* Subscribe to articles, publishers, and journalists
 
-* **Journalist**
+**Journalist**
 
-  * Create, edit, and delete their own articles (only before approval)
-  * Submit articles for review
+* Create, edit, and delete their own articles (only before approval)
+* Submit articles for review
 
-* **Editor**
+**Editor**
 
-  * Approve or reject articles
-  * Manage all content
-  * Create publishers and newsletters
-  * Manage user profiles
+* Approve or reject articles
+* Manage all content
+* Create publishers and newsletters
+* Manage user profiles
 
 ---
 
@@ -180,6 +188,12 @@ Open:
 ```
 docs/build/html/index.html
 ```
+
+---
+
+## 📸 Screenshots
+
+Screenshots of the application can be found in the `screenshots/` folder.
 
 ---
 
