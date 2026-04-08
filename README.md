@@ -64,15 +64,17 @@ Users can create, manage, review, and subscribe to articles, publishers, and new
 
 ## 🛠️ Tech Stack
 
-* Python 3.x
+* Python 3
 * Django
 * Django REST Framework
-* MariaDB / MySQL
+* SQLite
+* Docker
+* Sphinx
 * HTML (Django Templates)
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚙️ Installation & Setup (Local Development)
 
 ### 1️⃣ Clone the Repository
 
@@ -87,9 +89,9 @@ cd news_project
 
 ```bash
 python -m venv venv
-source venv/bin/activate  # Mac/Linux
+source venv/bin/activate   # Mac/Linux
 # OR
-venv\Scripts\activate     # Windows
+venv\Scripts\activate      # Windows
 ```
 
 ---
@@ -102,58 +104,15 @@ pip install -r requirements.txt
 
 ---
 
-## 🗄️ Database Setup (MariaDB/MySQL)
-
-### 4️⃣ Open MySQL
+### 4️⃣ Apply Migrations
 
 ```bash
-mysql -u root -p
-```
-
----
-
-### 5️⃣ Create Database
-
-```sql
-CREATE DATABASE news_project_db;
-```
-
-If it already exists, ignore the error.
-
----
-
-### 6️⃣ Exit MySQL
-
-```sql
-EXIT;
-```
-
----
-
-### 7️⃣ Set Environment Variables
-
-Mac/Linux:
-
-```bash
-export DB_NAME=news_project_db
-export DB_USER=root
-export DB_PASSWORD=yourpassword
-export DB_HOST=localhost
-export DB_PORT=3306
-```
-
----
-
-### 8️⃣ Apply Migrations
-
-```bash
-python manage.py makemigrations
 python manage.py migrate
 ```
 
 ---
 
-### 9️⃣ Create Superuser
+### 5️⃣ Create Superuser (Optional)
 
 ```bash
 python manage.py createsuperuser
@@ -161,7 +120,7 @@ python manage.py createsuperuser
 
 ---
 
-### 🔟 Run the Server
+### 6️⃣ Run the Server
 
 ```bash
 python manage.py runserver
@@ -172,6 +131,63 @@ Open:
 ```
 http://127.0.0.1:8000/
 ```
+
+---
+
+## 🐳 Run with Docker
+
+### 1️⃣ Build the Docker Image
+
+```bash
+docker build -t news_project .
+```
+
+---
+
+### 2️⃣ Run the Container
+
+```bash
+docker run -p 8000:8000 news_project
+```
+
+If port 8000 is already in use:
+
+```bash
+docker run -p 8001:8000 news_project
+```
+
+Open:
+
+```
+http://127.0.0.1:8000/
+```
+
+---
+
+## 📚 Documentation (Sphinx)
+
+Documentation is located in the `docs/` folder.
+
+To rebuild documentation:
+
+```bash
+cd docs
+sphinx-build -b html source build/html
+```
+
+Open:
+
+```
+docs/build/html/index.html
+```
+
+---
+
+## 🌿 Git Branches
+
+* `main` → final merged project
+* `docs` → Sphinx documentation
+* `container` → Docker setup
 
 ---
 
@@ -186,43 +202,16 @@ The application follows Django’s Model-View-Template architecture:
 
 ---
 
-## 🔐 Permission Design
+## 📂 Planning Documents
 
-* Journalists:
-
-  * Manage their own articles
-  * Can delete only before approval
-
-* Editors:
-
-  * Approve/reject content
-  * Manage all users and data
-
-* Users:
-
-  * Can manage their own profiles only
-
----
-
-## 🧯 Troubleshooting
-
-### MySQL Access Denied
-
-Ensure DB_PASSWORD is correct and environment variables are set.
-
-### Database Already Exists
-
-Safe to ignore.
-
-----
-## Planning Documents
 All planning documents required for the capstone are in the `Planning/` folder, including:
-- functional and non-functional requirements
-- UI/UX planning
-- database normalization
-- ERD
-- API planning
-- testing plan
+
+* Functional and non-functional requirements
+* UI/UX planning
+* Database normalization
+* ERD
+* API planning
+* Testing plan
 
 ---
 
@@ -230,11 +219,13 @@ All planning documents required for the capstone are in the `Planning/` folder, 
 
 ```
 news_project/
+├── docs/
 ├── newsapp/
 ├── Planning/
 ├── screenshots/
 ├── manage.py
-└── requirements.txt
+├── requirements.txt
+├── Dockerfile
 ```
 
 ---
