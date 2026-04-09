@@ -25,7 +25,7 @@ Users can create, manage, review, and subscribe to articles, publishers, and new
 
 **Journalist**
 
-* Create, edit, and delete their own articles (only before approval)
+* Create, edit, and delete their own articles (before approval)
 * Submit articles for review
 
 **Editor**
@@ -56,15 +56,15 @@ Users can create, manage, review, and subscribe to articles, publishers, and new
 
 ### 🏢 Publisher & Newsletter
 
-* Editors can create publishers
-* Editors & journalists can create newsletters
-* Articles can be linked to publishers/newsletters
+* Editors create publishers
+* Editors & journalists create newsletters
+* Articles linked to publishers/newsletters
 
 ---
 
 ### 🔐 Permissions
 
-* Journalists can only delete their own articles **before approval**
+* Journalists can only delete their own articles before approval
 * Editors can manage all content
 * Users can only manage their own profiles (unless editor)
 
@@ -75,7 +75,7 @@ Users can create, manage, review, and subscribe to articles, publishers, and new
 * Python 3
 * Django
 * Django REST Framework
-* SQLite
+* **MariaDB / MySQL (production-ready database)**
 * Docker
 * Sphinx
 * HTML (Django Templates)
@@ -112,7 +112,25 @@ pip install -r requirements.txt
 
 ---
 
-### 4️⃣ Apply Migrations
+### 4️⃣ Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+DJANGO_SECRET_KEY=django-insecure-change-me-before-production
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost
+
+DB_NAME=news_project_db
+DB_USER=news_user
+DB_PASSWORD=news_password
+DB_HOST=127.0.0.1
+DB_PORT=3306
+```
+
+---
+
+### 5️⃣ Apply Migrations
 
 ```bash
 python manage.py migrate
@@ -120,7 +138,7 @@ python manage.py migrate
 
 ---
 
-### 5️⃣ Create Superuser (Optional)
+### 6️⃣ Create Superuser (Optional)
 
 ```bash
 python manage.py createsuperuser
@@ -128,7 +146,7 @@ python manage.py createsuperuser
 
 ---
 
-### 6️⃣ Run the Server
+### 7️⃣ Run the Server
 
 ```bash
 python manage.py runserver
@@ -142,29 +160,9 @@ http://127.0.0.1:8000/
 
 ---
 
-## 🐳 Run with Docker
+## 🔌 API Documentation & Usage
 
-### 1️⃣ Build the Docker Image
-
-```bash
-docker build -t news_project .
-```
-
----
-
-### 2️⃣ Run the Container
-
-```bash
-docker run -p 8000:8000 news_project
-```
-
-If port 8000 is already in use:
-
-```bash
-docker run -p 8001:8000 news_project
-```
-
-Open:
+### Base URL
 
 ```
 http://127.0.0.1:8000/
@@ -172,11 +170,155 @@ http://127.0.0.1:8000/
 
 ---
 
+### 🔐 Authentication (JWT)
+
+#### Get Token
+
+```http
+POST /api/token/
+```
+
+Request:
+
+```json
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+Response:
+
+```json
+{
+  "refresh": "refresh_token",
+  "access": "access_token"
+}
+```
+
+---
+
+#### Refresh Token
+
+```http
+POST /api/token/refresh/
+```
+
+---
+
+### 🔑 Authorization Header
+
+```
+Authorization: Bearer your_access_token
+```
+
+---
+
+## 📡 API Endpoints
+
+### Articles
+
+#### Get all articles
+
+```http
+GET /api/articles/
+```
+
+#### Create article
+
+```http
+POST /api/articles/
+```
+
+Example:
+
+```json
+{
+  "title": "Breaking News",
+  "content": "Article content",
+  "publisher_id": 1,
+  "newsletter_id": 1,
+  "status": "draft"
+}
+```
+
+---
+
+#### Get single article
+
+```http
+GET /api/articles/<id>/
+```
+
+---
+
+#### Subscribed articles
+
+```http
+GET /api/articles/subscribed/
+```
+
+---
+
+#### Pending articles (Editor only)
+
+```http
+GET /api/articles/pending/
+```
+
+---
+
+### Profiles
+
+```http
+GET /api/profiles/<id>/
+```
+
+---
+
+## 🧪 Testing the API
+
+### Using curl
+
+#### Get token
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/token/ \
+-H "Content-Type: application/json" \
+-d '{"username":"your_username","password":"your_password"}'
+```
+
+---
+
+#### Get articles
+
+```bash
+curl http://127.0.0.1:8000/api/articles/
+```
+
+---
+
+#### Create article
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/articles/ \
+-H "Authorization: Bearer your_access_token" \
+-H "Content-Type: application/json" \
+-d '{"title":"Test","content":"Body","status":"draft"}'
+```
+
+---
+
+## 🐳 Run with Docker
+
+```bash
+docker build -t news_project .
+docker run -p 8000:8000 news_project
+```
+
+---
+
 ## 📚 Documentation (Sphinx)
-
-Documentation is located in the `docs/` folder.
-
-To rebuild documentation:
 
 ```bash
 cd docs
@@ -193,39 +335,7 @@ docs/build/html/index.html
 
 ## 📸 Screenshots
 
-Screenshots of the application can be found in the `screenshots/` folder.
-
----
-
-## 🌿 Git Branches
-
-* `main` → final merged project
-* `docs` → Sphinx documentation
-* `container` → Docker setup
-
----
-
-## 🏗️ System Design Overview
-
-The application follows Django’s Model-View-Template architecture:
-
-* **Models:** Define entities (Article, User, Publisher, Newsletter)
-* **Views:** Handle logic and enforce permissions
-* **Templates:** Render UI
-* **API:** Built with Django REST Framework
-
----
-
-## 📂 Planning Documents
-
-All planning documents required for the capstone are in the `Planning/` folder, including:
-
-* Functional and non-functional requirements
-* UI/UX planning
-* Database normalization
-* ERD
-* API planning
-* Testing plan
+Located in `screenshots/`
 
 ---
 
