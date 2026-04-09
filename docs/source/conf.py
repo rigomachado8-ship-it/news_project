@@ -1,30 +1,26 @@
-# Configuration file for the Sphinx documentation builder.
-
 import os
 import sys
+from pathlib import Path
 import django
 
-sys.path.insert(0, os.path.abspath("../.."))
-os.environ["DJANGO_SETTINGS_MODULE"] = "news_project.settings"
-django.setup()
+BASE_DIR = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(BASE_DIR))
 
-# -- Project information -----------------------------------------------------
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "news_project.settings")
+django.setup()
 
 project = "news_project"
 copyright = "2026, Rodrigo Machado"
 author = "Rodrigo Machado"
-release = "4/08/26"
-
-# -- General configuration ---------------------------------------------------
+release = "2026-04-08"
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
 ]
 
 templates_path = ["_templates"]
 exclude_patterns = []
-
-# -- Options for HTML output -------------------------------------------------
 
 html_theme = "alabaster"
 html_static_path = ["_static"]
